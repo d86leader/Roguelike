@@ -10,15 +10,13 @@ function init() {
 }
 function testWebSocket() {
 	websocket = new WebSocket(wsUri);
-	websocket.onopen = function(evt) { onOpen("1234567890") }; 
+	websocket.onopen = function(evt) { onOpen("80") }; 
 	websocket.onclose = function(evt) { onClose(evt) }; 
 	websocket.onmessage = function(evt) { onMessage(evt) }; 
 	websocket.onerror = function(evt) { onError(evt) };
 }
 function onOpen(msg) {
 	writeToScreen("CONNECTED");
-	doSend(msg);
-	alert("d");
 	doSend(msg);
 }
 function onClose(evt) { writeToScreen("DISCONNECTED"); }  
