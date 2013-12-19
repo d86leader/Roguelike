@@ -17,9 +17,16 @@ KEY_LEFT = 37
 KEY_RIGHT = 39
 
 class Tile:
-	def __init__(self, blocked):
+	def __init__(self, blocked, char=" "):
+		self.char = char
 		self.blocked = blocked
 		self.explored = False
+	def get_client_data(self):
+		return {
+			"char":self.char,
+			"blocked":self.blocked,
+			"explored":self.explored
+		}
 
 class Rect:
 	def __init__(self, x, y, w, h):
@@ -69,6 +76,18 @@ class Object:
 		dy = other.y - self.y
 		return math.sqrt(dx ** 2 + dy ** 2)
 
+	def get_client_data(self):
+		return {
+			"x":self.x,
+			"y":self.y,
+			"char":self.char,
+			"color":self.color,
+			"max_hp":self.fighter.max_hp,
+			"hp":self.fighter.hp,
+			"defense":self.fighter.defense,
+			"power":self.fighter.power
+		}
+
 class Fighter:
 	def __init__(self, hp, defense, power):
 		self.max_hp = hp
@@ -91,7 +110,6 @@ class BasicMonster:
 			player.fighter.hp -= monster.fighter.power/player.fighter.defense
 
 def is_blocked(x, y):
-	print(x, y, type(map_dung[y][x]), dir(map_dung[y][x]))
 	if map_dung[y][x].blocked:
 		return True
 
@@ -103,8 +121,8 @@ def is_blocked(x, y):
 
 def create_room(room):
 	global map_dung
-	for x in range(room.x1 + 1, room.x2):
-		for y in range(room.y1 + 1, room.y2):
+	for y in range(room.y1 + 1, room.y2):
+		for x in range(room.x1 + 1, room.x2):
 			map_dung[y][x].blocked = False
 
 def create_h_tunnel(x1, x2, y):
@@ -122,9 +140,11 @@ def make_map_dung():
 	global map_dung, player
 
 	#fill map_dung with "blocked" tiles
-	map_dung = [[ Tile(True)
-		for x in range(MAP_DUNG_WIDTH) ]
-			for y in range(MAP_DUNG_HEIGHT) ]
+	map_dung = []
+	for y in range(MAP_DUNG_HEIGHT):
+		map_dung.append([])
+		for x in range(MAP_DUNG_WIDTH):
+			map_dung[y].append(Tile(True))
 
 	rooms = []
 	num_rooms = 0
@@ -189,25 +209,17 @@ def place_objects(room):
  
 			objects.append(monster)
 
-def obj_to_JSON(obj):
-	if str(type(obj)) == "<type 'instance'>":
-		print(obj, obj.__dict__)
-		return obj_to_JSON(obj.__dict__)
-	elif type(obj) == list:
-		for i in range(len(obj)):
-			obj[i] = obj_to_JSON(obj[i])
-	elif type(obj) == dict:
-		for key in obj:
-			obj[key] = obj_to_JSON(obj[key])
-	else:
-		return obj
-
 def render_all():
 	global sender_data
 	sender_data_arr = {}
-	sender_data_arr["map_dung"] = map_dung
-	sender_data_arr["objects"] = objects
-	obj_to_JSON(sender_data_arr)
+	sender_data_arr["map_dung"] = []
+	for y in range(MAP_DUNG_HEIGHT):
+		sender_data_arr["map_dung"].append([])
+		for x in range(MAP_DUNG_WIDTH):
+			sender_data_arr["map_dung"][y].append(map_dung[y][x].get_client_data())
+	sender_data_arr["objects"] = []
+	for i in range(len(objects)):
+		sender_data_arr["objects"] = objects[i].get_client_data()
 	sender_data = json.dumps(sender_data_arr)
 
 def player_move_or_attack(dx, dy):
@@ -236,9 +248,9 @@ def init():
 	make_map_dung()
 
 def game_loop():
-	for object in objects:
-		if object.ai:
-			object.ai.take_turn()
+	for obj in objects:
+		if obj.ai:
+			obj.ai.take_turn()
 
 	render_all()
 
