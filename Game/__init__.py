@@ -1,10 +1,11 @@
-import math, json, random
-from Game import *
-from Constant import *
-from Map import *
-from Tile import *
-from Location import *
-from Rect import *
-from Object import *
-from Fighter import *
-from BasicMonster import *
+__all__ = [
+	"Game",
+	"Constants",
+	"Map",
+	"Tile",
+	"Location",
+	"Rect",
+	"Object",
+	"Fighter",
+	"BasicMonster"
+]
