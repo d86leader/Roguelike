@@ -78,14 +78,14 @@ class WebSocketServer:
 
 		return header+buf
 
-	def handle(self, s, addr, game, max_ping_time):
+	def handle(self, s, addr, gamec, max_ping_time):
 		data = s.recv(1024)
 		s.send(self.create_handshake(data))
 		
 		#s.setblocking(0)
 		s.settimeout(max_ping_time)
 
-		game.init()
+		game = gamec()
 
 		while True:
 			try:
@@ -94,8 +94,7 @@ class WebSocketServer:
 				print("Disconnected by "+str(addr))
 				break
 			
-			game.handle_keys(self.unpack_frame(data)['payload'])
-			s.send(self.pack_frame(game.sender_data, 0x1))
+			s.send(self.pack_frame(game.handle_keys(self.unpack_frame(data)['payload']), 0x1))
 
 		s.close()
 		

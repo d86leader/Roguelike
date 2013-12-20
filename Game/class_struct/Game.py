@@ -1,20 +1,38 @@
 import math, json, random
 
-SCREEN_WIDTH = 80
-SCREEN_HEIGHT = 50
+class Game:
+	def __init__(self):
+		self.sender_data = ""
+		self.location = Location()
+		self.const = Constants()
 
-MAP_DUNG_WIDTH = 80
-MAP_DUNG_HEIGHT = 45
+	def handle_keys(self, d):
+		if d == str(self.const.KEY_UP):
+			player_move_or_attack(0, -1)
+		elif d == str(self.const.KEY_DOWN):
+			player_move_or_attack(0, 1)
+		elif d == str(self.const.KEY_LEFT):
+			player_move_or_attack(-1, 0)
+		elif d == str(self.const.KEY_RIGHT):
+			player_move_or_attack(1, 0)
 
-ROOM_MAX_SIZE = 10
-ROOM_MIN_SIZE = 6
-MAX_ROOMS = 30
-MAX_ROOM_MONSTERS = 3
+		self.game_loop()
+		return self.sender_data
 
-KEY_UP = 38
-KEY_DOWN = 40
-KEY_LEFT = 37
-KEY_RIGHT = 39
+	def game_loop(self):
+		for obj in self.location.objects:
+			if obj.ai:
+				obj.ai.take_turn()
+		self.render_all()
+
+	def render_all(self):
+		sender_data_arr = {}
+		sender_data_arr["map_dung"] = self.location.map.get_client_data()
+		sender_data_arr["objects"] = []
+		for i in range(len(objects)):
+			sender_data_arr["objects"] = self.location.objects[i].get_client_data()
+		self.sender_data = str(json.dumps(sender_data_arr))
+
 
 class Tile:
 	def __init__(self, blocked, char=" "):
@@ -126,16 +144,6 @@ class BasicMonster:
 		elif player.fighter.hp > 0:
 			player.fighter.attack(player)
 
-def is_blocked(x, y):
-	if map_dung[y][x].blocked:
-		return True
-
-	for object in objects:
-		if object.blocks and object.x == x and object.y == y:
-			return True
- 
-	return False
-
 def create_room(room):
 	global map_dung
 	for y in range(room.y1 + 1, room.y2):
@@ -151,55 +159,6 @@ def create_v_tunnel(y1, y2, x):
 	global map_dung
 	for y in range(min(y1, y2), max(y1, y2) + 1):
 		map_dung[y][x].blocked = False
-
-def make_map_dung():
-	# dungeon generator
-	global map_dung, player
-
-	#fill map_dung with "blocked" tiles
-	map_dung = []
-	for y in range(MAP_DUNG_HEIGHT):
-		map_dung.append([])
-		for x in range(MAP_DUNG_WIDTH):
-			map_dung[y].append(Tile(True))
-
-	rooms = []
-	num_rooms = 0
-	for r in range(MAX_ROOMS):
-		#random width and height
-		w = random.randint(ROOM_MIN_SIZE, ROOM_MAX_SIZE)
-		h = random.randint(ROOM_MIN_SIZE, ROOM_MAX_SIZE)
-		#random position without going out of the boundaries of the map_dung
-		x = random.randint(0, MAP_DUNG_WIDTH - w - 1)
-		y = random.randint(0, MAP_DUNG_HEIGHT - h - 1)
-
-		new_room = Rect(x, y, w, h)
-
-		failed = False
-		for other_room in rooms:
-			if new_room.intersect(other_room):
-				failed = True
-				break
- 		
-		if not failed:
-			create_room(new_room)
-			place_objects(new_room)
-			(new_x, new_y) = new_room.center()
-			
-			if num_rooms == 0:
-				player.x = new_x
-				player.y = new_y
-			else:
-				(prev_x, prev_y) = rooms[num_rooms-1].center()
- 			
-				if random.randint(0, 1) == 1:
-					create_h_tunnel(prev_x, new_x, prev_y)
-					create_v_tunnel(prev_y, new_y, new_x)
-				else:
-					create_v_tunnel(prev_y, new_y, prev_x)
-					create_h_tunnel(prev_x, new_x, new_y)
-			rooms.append(new_room)
-			num_rooms += 1
 
 def place_objects(room):
 	num_monsters = random.randint(0, MAX_ROOM_MONSTERS)
@@ -225,19 +184,6 @@ def place_objects(room):
 					blocks=True, fighter=fighter_component, ai=ai_component)
  
 			objects.append(monster)
-
-def render_all():
-	global sender_data
-	sender_data_arr = {}
-	sender_data_arr["map_dung"] = []
-	for y in range(MAP_DUNG_HEIGHT):
-		sender_data_arr["map_dung"].append([])
-		for x in range(MAP_DUNG_WIDTH):
-			sender_data_arr["map_dung"][y].append(map_dung[y][x].get_client_data())
-	sender_data_arr["objects"] = []
-	for i in range(len(objects)):
-		sender_data_arr["objects"] = objects[i].get_client_data()
-	sender_data = str(json.dumps(sender_data_arr))
 
 def player_move_or_attack(dx, dy):
 	x = player.x + dx
@@ -269,34 +215,5 @@ def monster_death(monster):
 	monster.name = 'remains of ' + monster.name
 	monster.send_to_back()
 
-sender_data = ""
 
-def init():
-	global player
-	global objects
-	fighter_component = Fighter(hp=30, defense=2, power=5, death_function=player_death)
-	player = Object(0, 0, '@', 'player', "white", blocks=True, fighter=fighter_component)
-	objects = [player]
-	make_map_dung()
-
-def game_loop():
-	for obj in objects:
-		if obj.ai:
-			obj.ai.take_turn()
-
-	render_all()
-
-def handle_keys(d):
-	if d == str(KEY_UP):
-		player_move_or_attack(0, -1)
-	elif d == str(KEY_DOWN):
-		player_move_or_attack(0, 1)
-	elif d == str(KEY_LEFT):
-		player_move_or_attack(-1, 0)
-	elif d == str(KEY_RIGHT):
-		player_move_or_attack(1, 0)
-
-	game_loop()
-	global sender_data
-	return sender_data
 

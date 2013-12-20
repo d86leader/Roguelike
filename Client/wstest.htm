@@ -16,16 +16,21 @@ function testWebSocket() {
 	websocket.onerror = function(evt) { onError(evt) };
 }
 function onOpen(msg) {
-	writeToScreen("CONNECTED");
+	writeToScreen("CONNECTED("+websocket.readyState+")");
 	doSend(msg);
 }
-function onClose(evt) { writeToScreen("DISCONNECTED"); }  
+function onClose(evt) {
+	writeToScreen("DISCONNECTED("+websocket.readyState+")");
+}  
 function onMessage(evt) {
-	writeToScreen('<span style="color: blue;">RESPONSE: ' + evt.data); websocket.close();
+	writeToScreen('<span style="color: blue;">RESPONSE('+websocket.readyState+'): ' + evt.data);
+	//websocket.close();
 }
-function onError(evt) { writeToScreen('<span style="color: red;">ERROR: ' + evt.data); }  
+function onError(evt) {
+	writeToScreen('<span style="color: red;">ERROR('+websocket.readyState+'): ' + evt.data);
+}  
 function doSend(message) {
-	writeToScreen("SENT: " + message);
+	writeToScreen("SENT("+websocket.readyState+"): " + message);
 	websocket.send(message);
 }
 function writeToScreen(message) {
