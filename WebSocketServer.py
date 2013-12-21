@@ -1,3 +1,7 @@
+import socket, threading, struct, array
+from hashlib import sha1
+from base64 import b64encode
+
 class WebSocketServer:
 	"""
 	self.unpack_frame(d)['payload'] - unpack received data
@@ -80,8 +84,6 @@ class WebSocketServer:
 		
 		#s.setblocking(0)
 		s.settimeout(max_ping_time)
-
-		print(type(Location))
 
 		game = gamec()
 

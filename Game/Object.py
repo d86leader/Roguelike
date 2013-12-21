@@ -1,5 +1,8 @@
+import math
+
 class Object:
-	def __init__(self, x, y, char, name, color, blocks=False, fighter=None, ai=None):
+	def __init__(self, x, y, char, name, color, game, blocks=False, fighter=None, ai=None):
+		self.game = game
 		self.x = x
 		self.y = y
 		self.char = char
@@ -14,7 +17,7 @@ class Object:
 			self.ai.owner = self
 
 	def move(self, dx, dy):
-		if not is_blocked(self.x + dx, self.y + dy):
+		if not self.game.location.map.is_blocked(self.x + dx, self.y + dy):
 			self.x += dx
 			self.y += dy
 
@@ -33,8 +36,8 @@ class Object:
 		return math.sqrt(dx ** 2 + dy ** 2)
 
 	def send_to_back(self):
-		game.location.objects.remove(self)
-		game.location.objects.insert(0, self)
+		self.game.location.objects.remove(self)
+		self.game.location.objects.insert(0, self)
 
 	def get_client_data(self):
 		return {

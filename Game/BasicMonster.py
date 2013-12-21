@@ -5,9 +5,9 @@ class BasicMonster:
 		monster = self.owner
 		
 		#move towards player if far away
-		if monster.distance_to(player) >= 2:
-			monster.move_towards(player.x, player.y)
+		if monster.distance_to(monster.game.location.player) >= 2:
+			monster.move_towards(monster.game.location.player.x, monster.game.location.player.y)
 		
 		#close enough, attack! (if the player is still alive.)
-		elif game.location.player.fighter.hp > 0:
-			game.location.player.fighter.attack(player)
+		elif monster.game.location.player.fighter.hp > 0:
+			monster.game.location.player.fighter.attack(player)

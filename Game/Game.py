@@ -1,8 +1,12 @@
+import math, json
+from Location import *
+from Constants import *
+
 class Game:
 	def __init__(self):
 		self.sender_data = ""
-		self.location = Location()
 		self.const = Constants()
+		self.location = Location(self)
 
 	def handle_keys(self, d):
 		if d == str(self.const.KEY_UP):
@@ -27,6 +31,6 @@ class Game:
 		sender_data_arr = {}
 		sender_data_arr["map_dung"] = self.location.map.get_client_data()
 		sender_data_arr["objects"] = []
-		for i in range(len(objects)):
+		for i in range(len(self.location.objects)):
 			sender_data_arr["objects"] = self.location.objects[i].get_client_data()
 		self.sender_data = str(json.dumps(sender_data_arr))

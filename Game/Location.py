@@ -1,9 +1,13 @@
+from Fighter import *
+from Object import *
+from Map import *
+
 class Location:
-	def __init__(self):
+	def __init__(self, game):
 		fighter_component = Fighter(hp=30, defense=2, power=5, death_function=self.player_death)
-		self.player = Object(0, 0, '@', 'player', "white", blocks=True, fighter=fighter_component)
-		self.objects = [player]
-		self.map = Map()
+		self.player = Object(0, 0, '@', 'player', "white", game, blocks=True, fighter=fighter_component)
+		self.objects = [self.player]
+		self.map = Map(game, self)
 
 	def player_death(self, player):
 		player.char = '%'
