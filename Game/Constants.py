@@ -1,7 +1,4 @@
 class Constants:
-	SCREEN_WIDTH = 80
-	SCREEN_HEIGHT = 50
-
 	MAP_DUNG_WIDTH = 80
 	MAP_DUNG_HEIGHT = 45
 

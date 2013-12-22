@@ -10,13 +10,13 @@ class Game:
 
 	def handle_keys(self, d):
 		if d == str(self.const.KEY_UP):
-			self.location.player_move_or_attack(0, -1)
+			self.player_move_or_attack(0, -1)
 		elif d == str(self.const.KEY_DOWN):
-			self.location.player_move_or_attack(0, 1)
+			self.player_move_or_attack(0, 1)
 		elif d == str(self.const.KEY_LEFT):
-			self.location.player_move_or_attack(-1, 0)
+			self.player_move_or_attack(-1, 0)
 		elif d == str(self.const.KEY_RIGHT):
-			self.location.player_move_or_attack(1, 0)
+			self.player_move_or_attack(1, 0)
 
 		self.game_loop()
 		return self.sender_data
@@ -34,3 +34,31 @@ class Game:
 		for i in range(len(self.location.objects)):
 			sender_data_arr["objects"] = self.location.objects[i].get_client_data()
 		self.sender_data = str(json.dumps(sender_data_arr))
+
+	def player_death(self, player):
+		player.char = '%'
+		player.color = "red"
+	 
+	def monster_death(self, monster):
+		monster.char = '%'
+		monster.color = "red"
+		monster.blocks = False
+		monster.fighter = None
+		monster.ai = None
+		monster.name = 'remains of ' + monster.name
+		monster.send_to_back()
+
+	def player_move_or_attack(self, dx, dy):
+		x = self.location.player.x + dx
+		y = self.location.player.y + dy
+
+		target = None
+		for obj in self.location.objects:
+			if obj.x == x and obj.y == y:
+				target = obj
+				break
+
+		if target is not None:
+			target.fighter.attack(target)
+		else:
+			self.location.player.move(dx, dy)
