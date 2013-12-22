@@ -41,6 +41,7 @@ class Object:
 
 	def get_client_data(self):
 		return {
+			"name":self.name,
 			"x":self.x,
 			"y":self.y,
 			"char":self.char,

@@ -15,7 +15,7 @@ class Map:
 		for y in range(self.game.const.MAP_DUNG_HEIGHT):
 			self.map_dung.append([])
 			for x in range(self.game.const.MAP_DUNG_WIDTH):
-				self.map_dung[y].append(Tile(True))
+				self.map_dung[y].append(Tile(Tiles["wall"]))
 
 		rooms = []
 		num_rooms = 0
@@ -100,9 +100,16 @@ class Map:
 		map_json = self.map_dung
 		for y in range(self.game.const.MAP_DUNG_HEIGHT):
 			for x in range(self.game.const.MAP_DUNG_WIDTH):
-				map_json[y][x] = {
-					"char": self.map_dung[y][x].char,
-					"blocked": self.map_dung[y][x].blocked,
-					"explored": self.map_dung[y][x].explored
-				}
+				if self.map_dung[y][x].explored:
+					map_json[y][x] = {
+						"char": self.map_dung[y][x].char,
+						"color": self.map_dung[y][x].color,
+						"color_back": self.map_dung[y][x].color_back
+					}
+				else:
+					map_json[y][x] = {
+						"char": " ",
+						"color": "white",
+						"color_back": "black"
+					}
 		return map_json
