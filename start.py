@@ -1,7 +1,7 @@
-from Game import Game
+from Game import Game, PlayerThread
 from WebSocketServer import WebSocketServer
 
-server = WebSocketServer(Game, 20, 9999)
+server = WebSocketServer(Game, PlayerThread, 20, 9999)
 
 """
 connect  - game.init()

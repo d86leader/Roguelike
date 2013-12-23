@@ -2,6 +2,8 @@ import math
 
 class Object:
 	def __init__(self, x, y, char, name, color, game, blocks=False, fighter=None, ai=None):
+		setAttrs(x, y, char, name, color, game, blocks, fighter, ai)
+	def setAttrs(self, x, y, char, name, color, game, blocks=False, fighter=None, ai=None):
 		self.game = game
 		self.x = x
 		self.y = y

@@ -1,4 +1,4 @@
-import socket, threading, struct, array
+import socket, threading, struct, array, time
 from hashlib import sha1
 from base64 import b64encode
 
@@ -7,17 +7,23 @@ class WebSocketServer:
 	self.unpack_frame(d)['payload'] - unpack received data
 	self.pack_frame(d, 0x1)			- pack sender data
 	"""
-	def __init__(self, game, max_ping_time, port):
+	def __init__(self, game, player, max_ping_time, port):
 		s = socket.socket()
 		s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 		s.bind(('', port))
 		s.listen(1)
-		self.threads = []
-		while True:
+		self.game = game()
+		self.state = "lobby"
+		self.players = []
+		wait = threading.Thread(target = self.wait_state, args = ())
+		wait.start()
+		while self.state == "lobby":
 			conn, addr = s.accept()
 			print("Connected by "+str(addr))
-			self.threads.append(threading.Thread(target = self.handle, args = (conn, addr, game, max_ping_time)))
-			self.threads[-1].start()
+			self.players.append(threading.Thread(target = self.handle, args = (conn, self.game, max_ping_time)))
+			self.players[-1].start()
+		del wait
+		self.game.start()
 
 	def create_handshake(self, handshake):
 		lines = handshake.splitlines()
@@ -78,14 +84,21 @@ class WebSocketServer:
 
 		return header+buf
 
-	def handle(self, s, addr, gamec, max_ping_time):
+	def handle(self, s, game, playerc, max_ping_time):
 		data = s.recv(1024)
 		s.send(self.create_handshake(data))
-		
-		#s.setblocking(0)
 		s.settimeout(max_ping_time)
 
-		game = gamec()
+		ready = False
+		while self.state = "lobby":
+			try:
+				data = s.recv(1024)
+			except socket.timeout:
+				continue
+			if self.unpack_frame(data)['payload'] == "ready":
+				ready = True
+
+		player = playerc(game)
 
 		while True:
 			try:
@@ -93,8 +106,15 @@ class WebSocketServer:
 			except socket.timeout:
 				print("Disconnected by "+str(addr))
 				break
-			
-			s.send(self.pack_frame(game.handle_keys(self.unpack_frame(data)['payload']), 0x1))
+			s.send(self.pack_frame(player.handle_keys(self.unpack_frame(data)['payload']), 0x1))
 
 		s.close()
-		
+
+	def wait_state():
+		while self.state = "lobby":
+			time.sleep(2)
+			st = False
+			for b in self.players:
+				st = b.ready or st
+			if st:
+				self.state = "game"
