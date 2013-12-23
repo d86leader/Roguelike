@@ -3,14 +3,15 @@ from Location import *
 from Constants import *
 
 class Game(threading.Thread):
-	def __init__(self, players):
+	def __init__(self, players, max_ping_time):
 		threading.Thread.__init__(self)
+		self.max_ping_time = max_ping_time
 		self.sender_data = ""
 		self.const = Constants()
 		self.location = Location(self, players)
 
 	def run(self):
-		time.sleep()
+		time.sleep(self.max_ping_time)
 		for obj in self.location.objects:
 			if obj.ai:
 				obj.ai.take_turn()

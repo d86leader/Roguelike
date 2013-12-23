@@ -4,10 +4,15 @@ class BasicMonster:
 		#if you can see it, it can see you
 		monster = self.owner
 		
+		i_min = 0
+		for pl in range(len(monster.game.location.players)):
+			if monster.move_towards(monster.game.location.players[pl].x, monster.game.location.players[pl].y) < monster.move_towards(monster.game.location.players[i_min].x, monster.game.location.players[i_min].y):
+				i_min = pl
+		player = monster.game.location.players[i_min]
 		#move towards player if far away
-		if monster.distance_to(monster.game.location.player) >= 2:
-			monster.move_towards(monster.game.location.player.x, monster.game.location.player.y)
+		if monster.distance_to(player) >= 2:
+			monster.move_towards(player.x, player.y)
 		
 		#close enough, attack! (if the player is still alive.)
-		elif monster.game.location.player.fighter.hp > 0:
-			monster.game.location.player.fighter.attack(player)
+		elif player.fighter.hp > 0:
+			player.fighter.attack(player)

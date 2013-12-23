@@ -1,5 +1,6 @@
 import json
+from Map import *
 
 class MapTown(Map):
-	def load_town(filename):
-		self.map_dung = json.loads(open(filename, "r").read())
+	def load_town(map_dung):
+		self.map_dung = map_dung

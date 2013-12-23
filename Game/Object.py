@@ -1,15 +1,14 @@
 import math
 
 class Object:
-	def __init__(self, x, y, char, name, color, game, blocks=False, fighter=None, ai=None):
-		setAttrs(x, y, char, name, color, game, blocks, fighter, ai)
-	def setAttrs(self, x, y, char, name, color, game, blocks=False, fighter=None, ai=None):
+	def __init__(self, x, y, name, type_mob, game, blocks=False, fighter=None, ai=None):
+		self.setAttrs(x, y, name, type_mob, game, blocks, fighter, ai)
+	def setAttrs(self, x, y, name, type_mob, game, blocks=False, fighter=None, ai=None):
 		self.game = game
 		self.x = x
 		self.y = y
-		self.char = char
 		self.name = name
-		self.color = color
+		self.type = type_mob
 		self.blocks = blocks
 		self.fighter = fighter
 		if self.fighter:  #let the fighter component know who owns it
@@ -44,10 +43,9 @@ class Object:
 	def get_client_data(self):
 		return {
 			"name":self.name,
+			"type":self.type,
 			"x":self.x,
 			"y":self.y,
-			"char":self.char,
-			"color":self.color,
 			"max_hp":self.fighter.max_hp,
 			"hp":self.fighter.hp,
 			"defense":self.fighter.defense,

@@ -8,7 +8,6 @@ from Map import *
 
 class MapDung(Map):
 	def dung_gen(self):
-		# dungeon generator
 		#fill map_dung with "blocked" tiles
 		for y in range(self.game.const.MAP_DUNG_HEIGHT):
 			self.map_dung.append([])
@@ -17,10 +16,8 @@ class MapDung(Map):
 		rooms = []
 		num_rooms = 0
 		for r in range(self.game.const.MAX_ROOMS):
-			#random width and height
 			w = random.randint(self.game.const.ROOM_MIN_SIZE, self.game.const.ROOM_MAX_SIZE)
 			h = random.randint(self.game.const.ROOM_MIN_SIZE, self.game.const.ROOM_MAX_SIZE)
-			#random position without going out of the boundaries of the map_dung
 			x = random.randint(0, self.game.const.MAP_DUNG_WIDTH - w - 1)
 			y = random.randint(0, self.game.const.MAP_DUNG_HEIGHT - h - 1)
 
@@ -36,11 +33,8 @@ class MapDung(Map):
 				self.create_room(new_room)
 				self.place_objects(new_room)
 				(new_x, new_y) = new_room.center()
-				
-				if num_rooms == 0:
-					self.location.player.x = new_x
-					self.location.player.y = new_y
-				else:
+
+				if num_rooms != 0:
 					(prev_x, prev_y) = rooms[num_rooms-1].center()
 	 			
 					if random.randint(0, 1) == 1:
@@ -84,11 +78,11 @@ class MapDung(Map):
 					#create an orc
 					fighter_component = Fighter(hp=10, defense=0, power=3, death_function=self.game.monster_death)
 					ai_component = BasicMonster()
-					monster = Object(x, y, 'o', 'orc', 'green', self.game, blocks=True, fighter=fighter_component, ai=ai_component)
+					monster = Object(x, y, 'orc'+str(i), 'orc', self.game, blocks=True, fighter=fighter_component, ai=ai_component)
 				else:
 					#create a troll
 					fighter_component = Fighter(hp=16, defense=1, power=4, death_function=self.game.monster_death)
 					ai_component = BasicMonster()
-					monster = Object(x, y, 'T', 'troll', 'darker_green', self.game, blocks=True, fighter=fighter_component, ai=ai_component)
+					monster = Object(x, y, 'troll'+str(i), 'troll', self.game, blocks=True, fighter=fighter_component, ai=ai_component)
 	
 				self.location.objects.append(monster)
