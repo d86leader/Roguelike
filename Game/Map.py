@@ -13,19 +13,20 @@ class Map:
 		return False
 
 	def get_client_data(self):
-		map_json = self.map_dung
+		map_json = []
 		for y in range(self.game.const.MAP_DUNG_HEIGHT):
+			map_json.append([])
 			for x in range(self.game.const.MAP_DUNG_WIDTH):
 				if self.map_dung[y][x].explored:
-					map_json[y][x] = {
+					map_json[y].append({
 						"char": self.map_dung[y][x].char,
 						"color": self.map_dung[y][x].color,
 						"color_back": self.map_dung[y][x].color_back
-					}
+					})
 				else:
-					map_json[y][x] = {
+					map_json[y].append({
 						"char": " ",
 						"color": "white",
 						"color_back": "black"
-					}
+					})
 		return map_json
