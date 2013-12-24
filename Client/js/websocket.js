@@ -1,37 +1,40 @@
-function websocketTransmitter(wsUri)
+function websocketTransmitter(wsUri, port)
 {
 	var that = this;
 
-	this.testWebSocket = function()
+	this.startWebSocket = function()
 	{
-		websocket = new WebSocket(wsUri);
-		websocket.onopen = function(evt) { that.onOpen("80") }; 
-		websocket.onclose = function(evt) { that.onClose(evt) }; 
-		websocket.onmessage = function(evt) { that.onMessage(evt) }; 
-		websocket.onerror = function(evt) { that.onError(evt) };
+		that.websocket = new WebSocket(wsUri);
+		that.websocket.onopen = function(evt) { that.onOpen(port) }; 
+		that.websocket.onclose = function(evt) { that.onClose(evt) }; 
+		that.websocket.onmessage = function(evt) { that.onMessage(evt) }; 
+		that.websocket.onerror = function(evt) { that.onError(evt) };
+
+		setInterval()
 	}
 	this.onOpen = function(msg)
 	{
-		log("CONNECTED("+websocket.readyState+")");
+		log("CONNECTED("+that.websocket.readyState+")");
+		log(msg);
 		that.doSend(msg);
 	}
 	this.onClose = function(evt)
 	{
-		log("DISCONNECTED("+websocket.readyState+")");
+		log("DISCONNECTED("+that.websocket.readyState+")");
 	}  
 	this.onMessage = function(evt)
 	{
-		log('<span style="color: blue;">RESPONSE('+websocket.readyState+'): ' + evt.data);
-		//websocket.close();
+		log('<span style="color: blue;">RESPONSE('+that.websocket.readyState+'): ' + evt.data);
+		socketStack.push(JSON.parse(evt.data));
 	}
 	this.onError = function(evt)
 	{
-		log('<span style="color: red;">ERROR('+websocket.readyState+'): ' + evt.data);
+		log('<span style="color: red;">ERROR('+that.websocket.readyState+'): ' + evt.data);
 	}  
 	this.doSend = function(message)
 	{
-		log("SENT("+websocket.readyState+"): " + message);
-		websocket.send(message);
+		that.websocket.send(message);
+		log("SENT("+that.websocket.readyState+"): " + message);
 	}
 	function log(message)
 	{

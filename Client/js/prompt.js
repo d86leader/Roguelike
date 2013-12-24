@@ -1,4 +1,4 @@
-function promptClass(output)
+function promptClass(output)//выводит в консоль по write(text)
 {
 	var that = this;
 
