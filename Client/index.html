@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />  
+	<title>Client</title>
+	<script language="javascript" type="text/javascript" src="js/.js"></script>
+
+	<script language="javascript" type="text/javascript" src="js/renderASCII.js"></script>
+	<script language="javascript" type="text/javascript" src="js/mapconverter.js"></script>
+	<script language="javascript" type="text/javascript" src="js/renderLayer.js"></script>
+
+	<script language="javascript" type="text/javascript" src="js/stack.js"></script>
+	<script language="javascript" type="text/javascript" src="js/prompt.js"></script>
+	<script language="javascript" type="text/javascript" src="js/websocket.js"></script>
+	
+	<script language="javascript" type="text/javascript" src="js/MAIN.js"></script>
+
+
+</head>
+<body onload="javascript:MAIN('ws://localhost:1488/')">
+	<canvas id='canvas' width='500' height='500'></canvas>
+	<div id='output'></div>
+</body>
+</html>
